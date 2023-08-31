@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: bookstore-nine
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_SCHEMA_NAME:bookdb}?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=utf-8&autoReconnect=true
+    username: ${MYSQL_USER:root}
+    password: ${MYSQL_PASS:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  flyway:
+    baselineOnMigrate: true
+    locations:
+      - db/migration/mysql
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${JWT_ISSUER:http://localhost:9090}
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}${JWT_SET_URI:/oauth2.jwks}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    operationsSorter: method
+
+logging:
+  level:
+    root: ${LOGGING_LEVEL_ROOT:info}
+    org:
+      springframework:
+        web:
+          filter:
+            CommonsRequestLoggingFilter: DEBUG
+
+server:
+  port: ${SERVER_PORT:8080}
+
+cache:
+  ttl: ${CACHE_TTL:10}

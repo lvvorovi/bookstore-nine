@@ -1,0 +1,69 @@
+version: '2'
+
+networks:
+  bookstore-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.26.0.0/16
+          gateway: 172.26.0.1
+
+
+services:
+
+  bookstoredb:
+    container_name: bookstoredb
+    image: mysql:8
+    restart: always
+    ports:
+      - "3306:3306"
+    networks:
+      - bookstore-network
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=bookdb
+
+  cache-service:
+    container_name: cache-service
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - bookstore-network
+
+  bookstore-service:
+    container_name: bookstore-service
+    image: lvvorovi/bookstore:9
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - bookstore-network
+    environment:
+      - MYSQL_HOST=172.26.0.1
+      - MYSQL_PORT=3306
+      - MYSQL_SCHEMA_NAME=bookdb
+      - LOGGING_LEVEL_ROOT=info
+      - MYSQL_USER=root
+      - MYSQL_PASS=root
+      - REDIS_HOST=172.26.0.1
+      - REDIS_PORT=6379
+      - SERVER_PORT=8080
+      - CACHE_TTL=10
+      - JWT_ISSUER=http://172.26.0.1:9090
+      - JWT_SET_URI=/oauth2/jwks
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
